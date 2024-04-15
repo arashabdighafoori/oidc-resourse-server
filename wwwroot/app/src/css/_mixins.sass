@@ -1,0 +1,70 @@
+@mixin Headings
+
+    h1, h2, h3, h4, h5, h6
+        @content
+
+@mixin Column($breakpoint, $size)
+
+    .col#{$breakpoint}-#{$size}
+        grid-column: span $size
+
+$grid-columns: 12
+$grid-gutter: 0
+$breakpoints: (-sm: 576px, -md: 768px, -lg: 992px)
+// $breakpoints: (-sm: 576px, -md: 768px, -lg: 992px, -xl: 1200px)
+
+@mixin NOTSM
+    @media only screen and (max-width: 576px)
+        @content
+
+@mixin SM
+    @media only screen and (min-width: 576px)
+        @content
+
+@mixin MD
+    @media only screen and (min-width: 768px)
+        @content
+
+@mixin LG
+    @media only screen and (min-width: 992px)
+        @content
+
+@mixin Row($breakpoint)
+    @for $i from 1 through $grid-columns
+        @include Column($breakpoint, $i)
+
+@mixin Grid
+
+    .container
+        max-width: 1200px
+        margin: 0 auto
+
+    .row
+        display: grid
+        grid-template-columns: repeat($grid-columns, 1fr)
+        grid-gap: $grid-gutter
+
+        @for $i from 1 through $grid-columns
+            @include Column("", $i)
+
+        @each $key, $val in $breakpoints
+            @media only screen and (min-width: $val)
+                @include Row($key)
+
+@mixin Padding
+    @for $i from 1 through 5
+        .px-#{$i}
+            padding-left: #{$i}rem
+            padding-right: #{$i}rem
+        .py-#{$i}
+            padding-bottom: #{$i}rem
+            padding-top: #{$i}rem
+
+@mixin Margin
+    @for $i from 1 through 5
+        .mx-#{$i}
+            margin-left: #{$i}rem
+            margin-right: #{$i}rem
+        .my-#{$i}
+            margin-bottom: #{$i}rem
+            margin-top: #{$i}rem

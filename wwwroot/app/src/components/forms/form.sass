@@ -1,0 +1,200 @@
+@use '/src/css/mixins'
+@import '/src/css/vars'
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active
+    -webkit-background-clip: text
+    -webkit-text-fill-color: $visible
+    transition: background-color 5000s ease-in-out 0s
+    box-shadow: inset 0 0 20px 20px $dominant
+
+.form
+
+    padding: 1rem
+    &_group
+        position: relative
+        background-color: $dominant
+        margin-bottom: 1rem
+
+    &_input, &_select
+        border: 0
+        border-bottom: 2px solid $secondary
+        background-color: $dominant
+        color: $visible
+        font-size: 1.3rem
+
+        margin-top: .5rem
+        margin-bottom: 0.3rem
+        padding: .5rem
+        width: 100%
+
+        &.disabled
+            border-radius: 100px
+
+            font-size: 1rem
+            padding-left: 2.4rem
+            background-color: $secondary
+            border: 2px solid $visible
+
+            + label
+                top: .8rem
+                left: .35rem
+                font-size: 1rem
+                border: 2px solid $visible
+                border-radius: 3rem
+
+        &:focus, &.filled
+            outline: 0
+            border-bottom-color: $visible
+
+            + label
+                top: 0
+                font-size: .8rem
+
+    &_label
+        transition: font-size .3s, top .3s
+        position: absolute
+        top: 1.05rem
+        font-size: 1.3rem
+
+    &_icon
+        background-color: transparent
+        color: $visible
+        cursor: pointer
+        position: absolute
+        top: 1rem
+        right: 1rem
+
+    &_header
+        padding: 1rem
+        > *
+            margin-bottom: 1rem
+
+    &_error
+        color: tomato
+        font-size: 0.7rem
+
+    &_text
+        font-size: 0.7rem
+        color: $visible-shade
+
+    &_container
+        height: calc(100vh - 1rem)
+        display: flex
+        flex-flow: column
+        justify-content: center
+
+    &_select
+
+        position: relative
+        min-height: 3rem
+        color: $visible
+
+        font-size: 1.3rem
+
+        + label
+            top: 0
+            font-size: .8rem
+
+        input
+            background: transparent
+            width: 100%
+            height: 100%
+            font-family: $font-normal
+            border: 0
+            color: $visible
+
+            font-size: 1.3rem
+            position: absolute
+            cursor: default
+            top: 0
+            left: 0
+            outline: 0
+
+        .a11y-text
+            z-index: 9999
+            border: 0px
+            clip: rect(1px, 1px, 1px, 1px)
+            height: 1px
+            width: 1px
+            position: absolute
+            overflow: hidden
+            padding: 0px
+            white-space: nowrap
+
+        .icon
+            display: flex
+            align-items: center
+            justify-content: center
+
+        .indicators
+            position: absolute
+            right: 0
+            top: 50%
+            transform: translate(-50%, -50%)
+
+        .clear-select
+            all: unset
+            display: flex
+            align-items: center
+            justify-content: center
+            width: 20px
+            height: 100%
+            color: $visible
+            cursor: pointer
+            pointer-events: all
+            flex-shrink: 0
+
+        .svelte-select-list
+            width: 100%
+            max-height: 252px
+            overflow-y: auto
+            background: $dominant
+            border: 1px solid $secondary
+            border-radius: 0.5rem
+            position: absolute
+            z-index: 99
+
+        [slot="selection"]
+            line-height: 0.6rem
+            font-size: 1.3rem
+
+        .value-container
+            margin-top: 1rem
+
+        .multi-item
+            z-index: 99
+            border: 1px solid $dominant-shade
+            padding: 0.25rem
+            border-radius: .25rem
+            margin: 0.25rem
+            &, &-text, &-clear
+                display: flex
+                justify-content: center
+                align-items: center
+            &-text
+                font-size: 1.3rem
+
+            &-clear
+                width: 12px
+                cursor: pointer
+            * + *
+                margin-left: .75rem
+
+        .list-item, .empty
+            padding: .5rem
+            cursor: pointer
+            &:hover
+                background-color: $secondary
+
+.ltr
+    .form
+        &_label
+            left: .5rem
+
+.rtl
+    .form
+        &_label
+            right: .5rem

@@ -1,0 +1,19 @@
+{
+  "form": {
+    "submit.errors": "There are errors",
+    "submit.repeat": "Something went wrong!",
+    "submit.submit": "Submit",
+    "labels": {
+      "email": "Email",
+      "password": "Password",
+      "friendlyname": "Name",
+      "theme": "Theme"
+    },
+    "errors": {
+      "required": "{label} is required.",
+      "min": "{label} has to be at least {minimum} characters.",
+      "format": "The format of {label} is wrong.",
+      "passpattern": "Your password should contain an uppercase letter, a lowercase letter, a number and an special character."
+    }
+  }
+}

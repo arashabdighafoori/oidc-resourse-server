@@ -1,0 +1,12 @@
+{
+  "app_settings": {
+    "theme": {
+      "title": "Theme",
+      "subtitle": "Change your theme"
+    },
+    "language": {
+      "title": "Language",
+      "subtitle": "Change your language"
+    }
+  }
+}

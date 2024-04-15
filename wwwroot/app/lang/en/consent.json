@@ -1,0 +1,12 @@
+{
+  "consent": {
+    "text": [
+      { "t": "text", "value": "I Agree to" },
+      { "t": "list", "value": ["item 1", "item 2"] }
+    ],
+    "buttons": {
+      "agree": "I Agree",
+      "disagree": "I Disagree"
+    }
+  }
+}
