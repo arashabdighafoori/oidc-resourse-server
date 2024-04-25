@@ -1,5 +1,5 @@
-using auth.Routes;
-using auth.Stores;
+using Auth.Routes;
+using Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 

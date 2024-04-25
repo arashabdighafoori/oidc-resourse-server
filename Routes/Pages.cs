@@ -1,9 +1,6 @@
-﻿using auth.Responses;
-using Microsoft.AspNetCore.Http.HttpResults;
-using System.Dynamic;
-using System.Net;
+﻿using System.Net;
 
-namespace auth.Routes;
+namespace Auth.Routes;
 
 public static class Pages
 {

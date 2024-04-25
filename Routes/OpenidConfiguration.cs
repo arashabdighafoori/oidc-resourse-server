@@ -1,5 +1,5 @@
-﻿using auth.Responses;
-namespace auth.Routes;
+﻿using Domain.Responses;
+namespace Auth.Routes;
 
 public static class OpenidConfiguration
 {
