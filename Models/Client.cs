@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace auth.Models;
 
+[DataContract]
+[BsonIgnoreExtraElements]
 public class Client
 {
-    public Client()
-    {
-
-    }
 
     public string ClientName { get; set; }
     public string ClientId { get; set; }
