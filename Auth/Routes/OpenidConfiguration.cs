@@ -3,7 +3,7 @@ namespace Auth.Routes;
 
 public static class OpenidConfiguration
 {
-    public static void AddOpenidConfigurationRoute(this WebApplication app)
+    public static void AddOpenidConfigurationRouter(this WebApplication app)
     {
         app.MapGet("/.well-known/openid-configuration", () =>
         {

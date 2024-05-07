@@ -6,12 +6,12 @@ public static class Pages
 {
 
     private static string? Index { get; set; }
-    public static void AddPagesRoute(this WebApplication app)
+    public static void AddPagesRouter(this WebApplication app)
     {
-        app.AddIndexRoute();
+        AddIndexRoute(app);
     }
 
-    public static void AddIndexRoute(this WebApplication app)
+    public static void AddIndexRoute(WebApplication app)
     {
         var GetIndex = () =>
         {
@@ -22,7 +22,6 @@ public static class Pages
             }
             if (string.IsNullOrEmpty(Index))
             {
-                Console.WriteLine("wow");
                 return Results.NotFound();
             }
 
