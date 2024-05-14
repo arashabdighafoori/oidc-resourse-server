@@ -1,5 +1,7 @@
 ﻿using Domain.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Persistence.Interfaces;
+using System.Security.Claims;
 
 namespace Persistence.Services;
 
@@ -67,4 +69,53 @@ public class CodeService : ICodeService
     }
 
 
+    public async Task<AuthorizationCode> UpdatedClientDataByCodeAsync(string key, IList<string> requestdScopes,
+            string userName, CancellationToken cancellationToken, string password = null, string nonce = null)
+    {
+        var oldValue = await GetClientDataByCode(key, cancellationToken);
+
+        if (oldValue != null)
+        {
+            // check the requested scopes with the one that are stored in the Client Store 
+            var client = await _clientStore.GetAsync(oldValue.ClientId, cancellationToken);
+
+            if (client != null)
+            {
+                var clientScope = (from m in client.AllowedScopes
+                                   where requestdScopes.Contains(m)
+                                   select m).ToList();
+
+                if (!clientScope.Any())
+                    return null;
+
+                AuthorizationCode newValue = new AuthorizationCode
+                {
+                    ClientId = oldValue.ClientId,
+                    CreationTime = oldValue.CreationTime,
+                    IsOpenId = requestdScopes.Contains("openId") || requestdScopes.Contains("profile"),
+                    RedirectUri = oldValue.RedirectUri,
+                    RequestedScopes = requestdScopes,
+                    Nonce = nonce
+                };
+
+
+                var claims = new List<Claim>();
+                if (newValue.IsOpenId)
+                {
+                    // TODO
+                    // Add more claims to the claims
+
+                }
+
+                var claimIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                newValue.Subject = new ClaimsPrincipal(claimIdentity);
+
+                var result = await _codeStore.UpdateAsync(key, newValue, cancellationToken);
+
+                if (result)
+                    return newValue;
+            }
+        }
+        return null;
+    }
 }

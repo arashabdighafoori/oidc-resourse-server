@@ -9,9 +9,9 @@ public static class OpenidConfiguration
         {
             return new DiscoveryResponse
             {
-                issuer = "https://localhost:5064",
-                authorization_endpoint = "https://localhost:5064/authorize",
-                token_endpoint = "https://localhost:5064/token",
+                issuer = "http://localhost:5257",
+                authorization_endpoint = "http://localhost:5257/auth",
+                token_endpoint = "http://localhost:5257/token",
                 token_endpoint_auth_methods_supported = new string[] { "client_secret_basic", "private_key_jwt" },
                 token_endpoint_auth_signing_alg_values_supported = new string[] { "RS256", "ES256" },
 
@@ -32,7 +32,7 @@ public static class OpenidConfiguration
                     "family_name", "nickname", "profile", "picture", "website", "email", "email_verified",
                     "locale", "zoneinfo" },
                 claims_parameter_supported = true,
-                service_documentation = "https://localhost:5064/connect/service_documentation.html",
+                service_documentation = "http://localhost:5257/connect/service_documentation.html",
                 ui_locales_supported = new string[] { "en-US", "en-GB", "en-CA", "fr-FR", "fr-CA" }
             };
         });

@@ -34,7 +34,7 @@
       <BaseForm
         on:success={on_success}
         form={myform}
-        action="/api/auth/isuser/"
+        action="/api/v1/auth/isuser"
       >
         <TextField field={form.email} name="email" id="email">
           <label for="email" class="form_label required"

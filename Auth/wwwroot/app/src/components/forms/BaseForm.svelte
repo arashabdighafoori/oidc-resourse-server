@@ -17,19 +17,19 @@
   // $: isForm = !isSuccess && !isSubmitting;
 
   const get_form_data = (model, form = null) => {
-    let formData = form || new FormData();
-    // let formKey;
-    for (let propertyName in model) {
-      let formKey = propertyName;
-      if (model[propertyName] instanceof Array) {
-        model[propertyName].forEach((element, index) => {
-          const tempFormKey = `${formKey}[${index}]`;
-          // console.log(element);
-          formData.append(tempFormKey, element.toString());
-        });
-      } else formData.append(formKey, model[propertyName]);
-    }
-    return formData;
+    // let formData = form || new FormData();
+    // // let formKey;
+    // for (let propertyName in model) {
+    //   let formKey = propertyName;
+    //   if (model[propertyName] instanceof Array) {
+    //     model[propertyName].forEach((element, index) => {
+    //       const tempFormKey = `${formKey}[${index}]`;
+    //       // console.log(element);
+    //       formData.append(tempFormKey, element.toString());
+    //     });
+    //   } else formData.append(formKey, model[propertyName]);
+    // }
+    return JSON.stringify(model);
   };
 
   const on_submit = async (ev) => {
@@ -42,7 +42,7 @@
     fetch(action, {
       method: "POST",
       headers: {
-        // "Content-Type": "multipart/form-data",
+        "Content-Type": "application/json",
       },
       body: formData,
     })

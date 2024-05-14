@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddStores(); 
 builder.Services.AddServices();
+builder.Services.AddIdentity(builder.Configuration);
+builder.Services.AddAuthentication();
+builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -18,9 +21,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthorization();
 app.UseStaticFiles();
-app.AddPagesRouter();
 app.AddAuthorizationRouter();
 app.AddOpenidConfigurationRouter();
+app.AddPagesRouter();
 
 app.Run();

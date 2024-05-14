@@ -9,3 +9,10 @@ export function updateQueryParam(key, value) {
     navigate(newRelativePathQuery);
   }
 }
+
+export function getQueryParams() {
+  if ("URLSearchParams" in window) {
+    var searchParams = new URLSearchParams(window.location.search);
+    return searchParams;
+  }
+}

@@ -13,13 +13,10 @@
   import Prep from "../../global/prep.svelte";
   import UserIcon from "../../icons/user_icon.svelte";
 
-  export let passedData = "";
-  export let isPassed = false;
-  const passedEmail = isPassed ? passedData : "";
-  const form = get_form(passedData);
+  export let data;
+  const form = get_form(data);
   const myform = form.form;
   $: name = $myform.summary.friendlyname;
-  console.log(name);
 
   const on_success = () => {
     setCookie(".NOM20.COOKIECONSENT", "true", 9999);
@@ -44,7 +41,7 @@
       <BaseForm
         on:success={on_success}
         form={myform}
-        action="/api/auth/register/"
+        action="/api/v1/auth/register"
       >
         <DataField field={form.email} name="email" id="email">
           <label for="email" class="form_label required">

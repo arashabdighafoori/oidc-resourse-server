@@ -26,7 +26,7 @@ public class AuthorizaionService : IAuthorizaionService
         _codeService = codeService;
         _clientStore = clientStore;
     }
-    public async Task<AuthorizeResponse> AuthorizeRequestAsync(IHttpContextAccessor httpContextAccessor, AuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
+    public async Task<AuthorizeResponse> AuthorizeRequestAsync(IHttpContextAccessor httpContextAccessor, ClientAuthorizationRequest authorizationRequest, CancellationToken cancellationToken)
     {
         AuthorizeResponse response = new AuthorizeResponse();
 
@@ -50,12 +50,12 @@ public class AuthorizaionService : IAuthorizaionService
             return response;
         }
 
-        if (!authorizationRequest.redirect_uri.IsRedirectUriStartWithHttps() && !httpContextAccessor.HttpContext.Request.IsHttps)
-        {
-            response.Error = ErrorTypeEnum.InvalidRequest.GetEnumDescription();
-            response.ErrorDescription = "redirect_url is not secure, MUST be TLS";
-            return response;
-        }
+        //if (!authorizationRequest.redirect_uri.IsRedirectUriStartWithHttps() && !httpContextAccessor.HttpContext.Request.IsHttps)
+        //{
+        //    response.Error = ErrorTypeEnum.InvalidRequest.GetEnumDescription();
+        //    response.ErrorDescription = "redirect_url is not secure, MUST be TLS";
+        //    return response;
+        //}
 
 
         // check the return url is match the one that in the client store
@@ -141,4 +141,5 @@ public class AuthorizaionService : IAuthorizaionService
         result.ErrorDescription = ErrorTypeEnum.AccessDenied.GetEnumDescription();
         return result;
     }
+
 }

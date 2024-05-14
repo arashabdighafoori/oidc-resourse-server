@@ -7,26 +7,46 @@ import {
 } from "svelte-forms/validators";
 import { get_fingerprint } from "../../../services/finger";
 
-export default function get_form(passedData) {
-  const email = field("email", passedData.trim(), [
+export default function get_form(data) {
+  const redirectUri = field("RedirectUri", data.redirectUri.trim(), []);
+  const code = field("Code", data.code.trim(), []);
+  const nonce = field("Nonce", data.nonce.trim(), []);
+  const scopes = data.requestedScopes.map((e, i) => {
+    return field(`RequestedScopes[${i}]`, e.trim(), []);
+  });
+
+  const email = field("Email", data.userName.trim(), [
     required(),
     between(3, 256),
     emailValidator(),
   ]);
-  const friendlyname = field("friendlyname", "", [required(), between(3, 56)]);
-  const password = field("password", "", [
+  const friendlyname = field("Friendlyname", "", [required(), between(3, 56)]);
+  const password = field("Password", "", [
     required(),
     pattern(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,64}$/
     ),
   ]);
-  const fingerprint = field("fingerprint", get_fingerprint(), [required()]);
-  const _form = form(email, friendlyname, password, fingerprint);
+  const fingerprint = field("Fingerprint", get_fingerprint(), [required()]);
+  const _form = form(
+    redirectUri,
+    code,
+    nonce,
+    email,
+    friendlyname,
+    password,
+    fingerprint,
+    ...scopes
+  );
   return {
+    redirectUri,
+    code,
+    nonce,
     email,
     friendlyname,
     password,
     fingerprint,
     form: _form,
+    ...scopes,
   };
 }

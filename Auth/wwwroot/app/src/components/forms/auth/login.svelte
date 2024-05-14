@@ -12,8 +12,8 @@
   import Prep from "../../global/prep.svelte";
   import UserIcon from "../../icons/user_icon.svelte";
 
-  export let passedData = "";
-  const form = get_form(passedData);
+  export let data;
+  const form = get_form(data);
   const myform = form.form;
 
   const on_success = ({ detail }) => {
@@ -35,7 +35,11 @@
         <h1 class="text-display-1">{$_("auth.password.title")}</h1>
         <h5 class="text-display-3">{$_("auth.password.subtitle")}</h5>
       </div>
-      <BaseForm on:success={on_success} form={myform} action="/api/auth/login/">
+      <BaseForm
+        on:success={on_success}
+        form={myform}
+        action="/api/v1/auth/login"
+      >
         <DataField field={form.email} name="email" id="email">
           <label for="email" class="form_label required">
             <UserIcon />

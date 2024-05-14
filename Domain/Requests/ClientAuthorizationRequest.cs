@@ -1,8 +1,8 @@
 ﻿namespace Domain.Request;
 
-public class AuthorizationRequest
+public class ClientAuthorizationRequest
 {
-    public AuthorizationRequest() { }
+    public ClientAuthorizationRequest() { }
     /// <summary>
     /// Response Type, is required
     /// </summary>
