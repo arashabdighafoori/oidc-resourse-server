@@ -3,11 +3,13 @@ using Domain.Request;
 using Domain.Responses;
 using Domain.Results;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using Persistence.Interfaces;
 using Persistence.Stores;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -77,7 +79,7 @@ public class AuthorizaionService : IAuthorizaionService
             return response;
         }
 
-        string nonce = httpContextAccessor.HttpContext.Request.Query["nonce"].ToString();
+        //string nonce = httpContextAccessor.HttpContext.Request.Query["nonce"].ToString();
 
         // Verify that a scope parameter is present and contains the openid scope value.
         // (If no openid scope value is present,
@@ -91,13 +93,16 @@ public class AuthorizaionService : IAuthorizaionService
         }
 
         response.RedirectUri = client.Client.RedirectUri + "?response_type=code" + "&state=" + authorizationRequest.state;
+        if (string.IsNullOrEmpty(authorizationRequest.nonce))
+        {
+            response.RedirectUri += "&nonce=" + authorizationRequest.nonce;
+        }
         response.Code = code;
         response.State = authorizationRequest.state;
         response.RequestedScopes = clientScopes.ToList();
-        response.Nonce = nonce;
+        response.Nonce = authorizationRequest.nonce ?? "";
 
         return response;
-
     }
 
     private async Task<CheckClientResult> VerifyClientByIdAsync(string clientId, CancellationToken cancellationToken, bool checkWithSecret = false, string clientSecret = null)
@@ -142,4 +147,88 @@ public class AuthorizaionService : IAuthorizaionService
         return result;
     }
 
+    public async Task<TokenResponse> GenerateTokenAsync(IHttpContextAccessor httpContextAccessor, CancellationToken cancellationToken)
+    {
+        TokenRequest request = new TokenRequest();
+
+        request.CodeVerifier = httpContextAccessor.HttpContext.Request.Form["code_verifier"];
+        request.ClientId = httpContextAccessor.HttpContext.Request.Form["client_id"];
+        request.ClientSecret = httpContextAccessor.HttpContext.Request.Form["client_secret"];
+        request.Code = httpContextAccessor.HttpContext.Request.Form["code"];
+        request.GrantType = httpContextAccessor.HttpContext.Request.Form["grant_type"];
+        request.RedirectUri = httpContextAccessor.HttpContext.Request.Form["redirect_uri"];
+
+        var checkClientResult = await this.VerifyClientByIdAsync(request.ClientId, cancellationToken, true, request.ClientSecret);
+        if (!checkClientResult.IsSuccess)
+        {
+            return new TokenResponse { Error = checkClientResult.Error, ErrorDescription = checkClientResult.ErrorDescription };
+        }
+
+        // check code from the Concurrent Dictionary
+        var clientCodeChecker = await _codeService.GetClientDataByCode(request.Code, cancellationToken);
+        if (clientCodeChecker == null)
+            return new TokenResponse { Error = ErrorTypeEnum.InvalidGrant.GetEnumDescription() };
+
+
+        // check if the current client who is one made this authentication request
+
+        if (request.ClientId != clientCodeChecker.ClientId)
+            return new TokenResponse { Error = ErrorTypeEnum.InvalidGrant.GetEnumDescription() };
+
+        // TODO: 
+        // also I have to check the rediret uri 
+
+
+        // Now here I will Issue the Id_token
+
+        JwtSecurityToken id_token = null;
+        if (clientCodeChecker.IsOpenId)
+        {
+            // Generate Identity Token
+
+            int iat = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+
+
+            string[] amrs = new string[] { "pwd" };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyAlg));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>()
+                {
+                    new Claim("sub", "856933325856"),
+                    new Claim("given_name", "Mohammed Ahmed Hussien"),
+                    new Claim("iat", iat.ToString(), ClaimValueTypes.Integer), // time stamp
+                    new Claim("nonce", clientCodeChecker.Nonce)
+                };
+            foreach (var amr in amrs)
+                claims.Add(new Claim("amr", amr));// authentication method reference 
+
+            id_token = new JwtSecurityToken("http://localhost:5257", request.ClientId, claims, signingCredentials: credentials,
+                expires: DateTime.UtcNow.AddMinutes(
+                   int.Parse("5")));
+
+        }
+
+        // Here I have to generate access token 
+        var key_at = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyAlg));
+        var credentials_at = new SigningCredentials(key_at, SecurityAlgorithms.HmacSha256);
+
+        var claims_at = new List<Claim>();
+
+
+        var access_token = new JwtSecurityToken("http://localhost:5257", request.ClientId, claims_at, signingCredentials: credentials_at,
+            expires: DateTime.UtcNow.AddMinutes(
+               int.Parse("5")));
+
+        // here remoce the code from the Concurrent Dictionary
+        await _codeService.RemoveClientDataByCodeAsync(request.Code, cancellationToken);
+
+        return new TokenResponse
+        {
+            access_token = new JwtSecurityTokenHandler().WriteToken(access_token),
+            id_token = id_token != null ? new JwtSecurityTokenHandler().WriteToken(id_token) : null,
+            code = request.Code
+        };
+    }
 }

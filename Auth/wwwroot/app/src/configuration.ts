@@ -8,4 +8,7 @@ export default {
     { value: "fa", label: "فارسی" },
     { value: "en", label: "English" },
   ],
+  itemKeys: {
+    featureFlagKey: "SzhxNpR+WrI@Byj3",
+  },
 };

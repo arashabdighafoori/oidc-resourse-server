@@ -32,4 +32,17 @@ public class ClientAuthorizationRequest
     /// if it was present in the client authorization request
     /// </summary>
     public string state { get; set; }
+
+    /// <summary>
+    /// Return the state in the result 
+    /// if it was present in the client authorization request
+    /// </summary>
+    public string? nonce { get; set; }
+
+
+    /// <summary>
+    /// Fingerprint, is required
+    /// </summary>
+
+    public string fingerprint { get; set; }
 }

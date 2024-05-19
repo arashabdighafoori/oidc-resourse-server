@@ -7,5 +7,6 @@ namespace Persistence.Interfaces
     public interface IAuthorizaionService
     {
         Task<AuthorizeResponse> AuthorizeRequestAsync(IHttpContextAccessor httpContextAccessor, ClientAuthorizationRequest authorizationRequest, CancellationToken cancellationToken);
+        Task<TokenResponse> GenerateTokenAsync(IHttpContextAccessor httpContextAccessor, CancellationToken cancellationToken);
     }
 }

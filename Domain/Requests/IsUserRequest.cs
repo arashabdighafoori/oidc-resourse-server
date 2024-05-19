@@ -5,11 +5,11 @@ public class IsUserRequest
     /// <summary>
     /// Usernme, is required
     /// </summary>
-    public string username { get; set; }
+    public string Username { get; set; }
 
     /// <summary>
     /// Fingerprint, is required
     /// </summary>
 
-    public string fingerprint { get; set; }
+    public string Fingerprint { get; set; }
 }

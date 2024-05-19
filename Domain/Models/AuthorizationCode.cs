@@ -1,7 +1,11 @@
-﻿using System.Security.Claims;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System.Runtime.Serialization;
+using System.Security.Claims;
 
 namespace Domain.Models;
 
+[DataContract]
+[BsonIgnoreExtraElements]
 public class AuthorizationCode
 {
     public string Code { get; set; }

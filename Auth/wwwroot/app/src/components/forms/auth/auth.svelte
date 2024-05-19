@@ -5,28 +5,35 @@
   import { updateQueryParam, getQueryParams } from "../../../helpers/uri";
   import PageContainer from "../../page/page_container.svelte";
   import LangThemeChain from "../../chains/lang_theme_chain.svelte";
+  import { get_fingerprint } from "../../../services/finger";
 
   let state = "initial";
   updateQueryParam("view", "checkup");
   var params = getQueryParams();
   let data = {};
-  var obj = {
-    response_type: params.get("response_type"),
-    client_id: params.get("client_id"),
-    redirect_uri: params.get("redirect_uri"),
-    scope: params.get("scope"),
-    state: params.get("state"),
-  };
+
   (async () => {
-    const rawResponse = await fetch("/api/v1/auth/authorize-client", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(obj),
-    });
-    data = await rawResponse.json();
+    if (params.has("response_type")) {
+      var obj = {
+        response_type: params.get("response_type"),
+        client_id: params.get("client_id"),
+        redirect_uri: params.get("redirect_uri"),
+        scope: params.get("scope"),
+        state: params.get("state"),
+        nonce: params.get("nonce"),
+        fingerprint: await get_fingerprint(),
+      };
+
+      const rawResponse = await fetch("/api/v1/auth/authorize-client", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(obj),
+      });
+      data = await rawResponse.json();
+    } else data = {};
   })();
 
   const handle_initial = ({ detail }) => {

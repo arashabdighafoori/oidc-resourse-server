@@ -24,6 +24,7 @@
     "rollup-plugin-uglify": "^6.0.4",
     "sirv-cli": "^2.0.0",
     "svelte": "^3.58.0",
+    "svelte-feature-flag": "^1.0.4",
     "svelte-forms": "^2.3.1",
     "svelte-preprocess": "^4.0.0",
     "svelte-routing": "^1.6.0",
@@ -33,6 +34,8 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
+    "@fingerprintjs/botd": "^1.9.1",
+    "clientjs": "^0.2.1",
     "svelte-i18n": "^4.0.0"
   }
 }
