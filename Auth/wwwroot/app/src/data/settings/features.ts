@@ -16,7 +16,6 @@ async function requestFlags() {
       // something went wrong, did not get featureflags
       console.error(error);
     });
-  store.set(current_value);
 }
 
 consent.subscribe((consent) => {
@@ -28,13 +27,15 @@ consent.subscribe((consent) => {
         configuration.itemKeys["featureFlagKey"],
         async () => {
           await requestFlags();
+          store.set(current_value);
           return current_value;
         }
       );
+      store.set(current_value);
     } else {
       await requestFlags();
+      store.set(current_value);
     }
-    console.log(current_value);
   })();
 });
 

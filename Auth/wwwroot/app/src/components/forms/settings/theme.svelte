@@ -7,6 +7,7 @@
   import SelectField from "../SelectField.svelte";
   import Page from "../../page/page.svelte";
   import configuration from "../../../configuration";
+  import { store } from "../../../data/settings/theme";
 
   let form;
   $: myform = form?.form;
@@ -15,7 +16,10 @@
   })();
 
   const on_submit = ({ detail }) => {
-    console.log(detail);
+    store.set(detail.Theme);
+    setTimeout(() => {
+      location.reload();
+    }, 1500);
   };
 </script>
 
@@ -23,11 +27,12 @@
   <Prep pack="app.settings">
     <Page>
       <div class="form_container">
-        <div class="form_header">
-          <h1>{$_("app_settings.theme.title")}</h1>
-          <h5>{$_("app_settings.theme.subtitle")}</h5>
-        </div>
         <IgnorantForm on:submit={on_submit} form={myform}>
+          <div class="form_header">
+            <h1>{$_("app_settings.theme.title")}</h1>
+            <h5>{$_("app_settings.theme.subtitle")}</h5>
+          </div>
+
           <SelectField
             field={form.theme}
             loadOptions={undefined}

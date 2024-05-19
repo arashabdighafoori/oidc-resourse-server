@@ -7,15 +7,18 @@
   let culture = $locale;
   let texts = [];
 
-  dictionary.subscribe((dict) => {
-    console.log(dict);
-    if (!dict.hasOwnProperty(culture)) {
-      culture = "en";
-    }
-    if (dict.hasOwnProperty(culture)) {
-      texts = dict[culture]["consent"]["text"];
-    }
-  });
+  const on_pack_loaded = () => {
+    dictionary.subscribe((dict) => {
+      console.log(dict);
+      if (!dict.hasOwnProperty(culture)) {
+        culture = "en";
+      }
+      if (dict.hasOwnProperty(culture)) {
+        texts = dict[culture]["consent"]["text"];
+      }
+    });
+    return "";
+  };
 
   const agree = () => {
     consent.set("true");
@@ -23,9 +26,13 @@
 </script>
 
 <Prep css_file="consent.min.css" pack="consent">
+  {on_pack_loaded()}
   <div id="consent">
     <Pongee>
       <div slot="content">
+        <h1 class="consent_title">
+          {$_("consent.title")}
+        </h1>
         {#each texts as txt}
           {#if txt.t == "text"}
             <p>{txt.value}</p>

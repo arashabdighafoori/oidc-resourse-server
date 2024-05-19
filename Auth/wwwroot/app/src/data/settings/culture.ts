@@ -2,6 +2,8 @@ import { writable } from "svelte/store";
 import { getLocaleFromNavigator } from "svelte-i18n";
 import { getCookie, setCookie } from "../../helpers/cookie";
 import { store as consent } from "./consent";
+import { store as features } from "./features";
+import { FeatureFlagsHelper } from "./featureFlagsHelper";
 
 export function direction(locale) {
   if (["ar", "fa"].some((e) => e == locale)) return "rtl";
@@ -17,15 +19,21 @@ consent.subscribe((consent) => {
       setCookie(".CULTURE", `${culture[1]},${culture[0]}`, 999);
 
       if (!current_cookie) {
-        const culture = getLocaleFromNavigator();
-        const dir = direction(culture);
-        setCookie(".CULTURE", `${culture},${dir}`, 999);
-        current_cookie = culture;
+        features.subscribe((flags) => {
+          let culture;
+          if (
+            FeatureFlagsHelper(flags).isFlagEnabled("getCultureFromNavigation")
+          ) {
+            culture = getLocaleFromNavigator();
+          } else culture = "en";
+          const dir = direction(culture);
+          setCookie(".CULTURE", `${culture},${dir}`, 999);
+          current_cookie = culture;
+        });
       }
     });
-  }
-  else{
-    store.set(["ltr", "en"])
+  } else {
+    store.set(["ltr", "en"]);
   }
 });
 

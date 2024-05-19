@@ -4,11 +4,9 @@ export default {
     { value: "light", label: "Light" },
     { value: "dark", label: "Dark" },
   ],
-  languages: [
-    { value: "fa", label: "فارسی" },
-    { value: "en", label: "English" },
-  ],
+  languages: [{ value: "en", label: "English" }],
   itemKeys: {
     featureFlagKey: "SzhxNpR+WrI@Byj3",
   },
 };
+  

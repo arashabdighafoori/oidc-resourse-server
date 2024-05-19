@@ -6,7 +6,7 @@
 
   const messages = writable([]);
   const close = (message) => {
-    const index = $messages.findIndex((e) => e[0] == message);
+    const index = $messages.findIndex((e) => e[0].message == message);
     console.log(index, message);
     messages.update((messages) => {
       messages.splice(index, 1);
@@ -21,7 +21,7 @@
       return messages;
     });
     setTimeout(() => {
-      if (!can_close) close(message);
+      if (!can_close) close(message.message);
     }, 5000);
   });
 
@@ -30,7 +30,7 @@
 </script>
 
 {#if css}
-  <div class="messages">  
+  <div class="messages">
     {#each $messages as message}
       <Message
         message={message[0]}

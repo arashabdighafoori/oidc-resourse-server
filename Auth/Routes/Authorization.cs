@@ -4,6 +4,7 @@ using Domain.Request;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
 using Microsoft.IdentityModel.Tokens;
 using Persistence.Interfaces;
 using Persistence.Services;
@@ -75,25 +76,50 @@ public static class Authoriztion
 
     public static void AddLoginRoute(WebApplication app)
     {
-        app.MapPost(Prefix + "/login", async (LoginRequest loginRequest, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ICodeService codeService, CancellationToken ct) =>
+        app.MapPost(Prefix + "/login", 
+            async (
+                LoginRequest loginRequest,
+                UserManager<ApplicationUser> userManager,
+                SignInManager<ApplicationUser> signInManager,
+                ICodeService codeService,
+                IFeatureManager featureManager,
+                CancellationToken ct) =>
         {
+
+            // check for bots
             var (isFingerprint, fingerprint) = loginRequest.Fingerprint.IsValidString();
             if(fingerprint.StartsWith("@"))
-                return Results.Ok(new { ok = false, error = "invalid_request" });
+                return Results.Ok(new { ok = false, url = "/auth", message = "invalid_request" });
 
+            // make sure the fingerprint is valid by default
+            var isFingerprintValid = true;
+
+            // validate username string
             var (isUserNameValid, username) = loginRequest.UserName.IsValidString();
 
+            // get the user
             ApplicationUser? userResult;
             if (isUserNameValid && username.IsValidEmail())
                 userResult = await userManager.FindByEmailAsync(loginRequest.UserName);
             else
                 // Wrong username string type
-                return Results.Ok(new { ok = false, error = "invalid_request" });
+                return Results.Ok(new { ok = false, url = "/auth", message = "invalid_request" });
 
+            // validte user not null
             var (isUserValid, user) = userResult.IsNotNull();
+
+            // validate password string
             var (isPasswordValid, password) = loginRequest.Password.IsValidString();
             if (isUserValid)
             {
+
+                // if the expected finnger print is not provided and the fingerprint validation fetture is enabled
+                if(user.Fingerprint != fingerprint && await featureManager.IsEnabledAsync("FingerPrintValidation"))
+                {
+                    // the fingerprint is not valid anymore
+                    isFingerprintValid = false;
+                }
+
                 var passResult = await userManager.CheckPasswordAsync(user, password);
                 if (!passResult)
                 {
@@ -109,33 +135,48 @@ public static class Authoriztion
             var (isNonceValid, nonce) = loginRequest.Nonce.IsValidString();
             var (isCodeValid, code) = loginRequest.Code.IsValidString();
             var (isRequestedScopesValid, requestedScopes) = loginRequest.RequestedScopes.IsNotNull();
-            if (isUserValid && isCodeValid && isRequestedScopesValid && isNonceValid)
+            if (isFingerprintValid && isUserValid && isCodeValid && isRequestedScopesValid && isNonceValid)
             {
                 var result = await codeService.UpdatedClientDataByCodeAsync(code, requestedScopes,
                     username, ct, nonce: nonce);
                 if (result is not null)
                 {
-                    //Console.WriteLine(loginRequest.RedirectUri);
                     loginRequest.RedirectUri = loginRequest.RedirectUri + "&code=" + loginRequest.Code;
-                    return Results.Ok(new { ok = true, url = loginRequest.RedirectUri, name = user.Friendlyname });
+                    return Results.Ok(new { ok = true, url = loginRequest.RedirectUri, name = user.Friendlyname, message = "logged_in" });
                 }
             }
-            else if (isUserValid)
+            else if (!isUserValid)
             {
-                Console.WriteLine("ha?");
-                await signInManager.SignInAsync(user, true);
-                return Results.Ok(new { ok = true, url = "/", name = user.Friendlyname });
+                // username or password is wrong
+                return Results.Ok(new { ok = false, url = "/auth", message = "wrong_input" });
             }
-            else
-                return Results.Ok(new { ok = false, error = "invalid_request" });
-            return Results.RedirectToRoute("Error", new { error = "invalid_request" });
+            else if (!isFingerprintValid)
+            {
+                // TODO: manage this part for multi factor auth
+                return Results.Ok(new { ok = false, url = "/auth/2fa", message = "mfa_required" });
+            }
+            else if (isFingerprintValid && isUserValid)
+            {
+                // user can sign in
+                await signInManager.SignInAsync(user, true);
+                return Results.Ok(new { ok = true, url = "/", name = user.Friendlyname, message = "logged_in" });
+            }
+
+            return Results.Ok(new { ok = false, url = "/auth", message = "invalid_request" });
         });
     }
 
 
     public static void AddRegisterRoute(WebApplication app)
     {
-        app.MapPost(Prefix + "/register", async (RegisterRequest registerRequest, ICodeService codeService, UserManager<ApplicationUser> userManager, CancellationToken ct) =>
+        app.MapPost(Prefix + "/register", async 
+            (
+            RegisterRequest registerRequest,
+            ICodeService codeService,
+            UserManager<ApplicationUser> userManager,
+            IFeatureManager featureManager,
+            CancellationToken ct
+            ) =>
         {
             var (isFingerprint, fingerprint) = registerRequest.Fingerprint.IsValidString();
             if (fingerprint.StartsWith("@"))
@@ -143,6 +184,9 @@ public static class Authoriztion
 
             var (isEmailValid, email) = registerRequest.Email.IsValidString();
             var (isPasswordValid, password) = registerRequest.Password.IsValidString();
+
+            // make sure the fingerprint is valid by default
+            var isFingerprintValid = true;
 
             if (!isPasswordValid || !isEmailValid || !email.IsValidEmail())
             {
@@ -164,6 +208,13 @@ public static class Authoriztion
             var (isUserValid, user) = userResult.IsNotNull();
             if(registerResult.Succeeded && isUserValid)
             {
+                // if the expected finnger print is not provided and the fingerprint validation fetture is enabled
+                if (user.Fingerprint != fingerprint && await featureManager.IsEnabledAsync("FingerPrintValidation"))
+                {
+                    // the fingerprint is not valid anymore
+                    isFingerprintValid = false;
+                }
+
                 var passResult = await userManager.AddPasswordAsync(user, password);
                 if (!passResult.Succeeded)
                 {

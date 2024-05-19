@@ -17,7 +17,6 @@
 
   const on_submit = ({ detail }) => {
     const { Culture } = detail;
-    console.log(detail);
     culture_store.set([direction(Culture), Culture]);
     setTimeout(() => {
       location.reload();
@@ -29,11 +28,12 @@
   <Prep pack="app.settings">
     <Page>
       <div class="form_container">
-        <div class="form_header">
-          <h1>{$_("app_settings.language.title")}</h1>
-          <h5>{$_("app_settings.language.subtitle")}</h5>
-        </div>
         <IgnorantForm on:submit={on_submit} form={myform}>
+          <div class="form_header">
+            <h1>{$_("app_settings.language.title")}</h1>
+            <h5>{$_("app_settings.language.subtitle")}</h5>
+          </div>
+
           <SelectField
             field={form.language}
             loadOptions={undefined}

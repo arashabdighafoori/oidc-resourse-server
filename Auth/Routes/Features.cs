@@ -10,7 +10,7 @@ using Persistence.Services;
 
 namespace Auth.Routes;
 
-public static class Features
+public static class ClientFeatures
 {
     private static readonly string Prefix = "/api/v1/features";
     public static void AddFeatureRouter(this WebApplication app)
@@ -24,9 +24,10 @@ public static class Features
         {
             return Results.Json(new
             {
-                themeView=true,
-                languageView=true,
-            });
+                themeView = true,
+                languageView = true,
+                getCultureFromNavigation = false,
+            }) ;
         });
     }
 }

@@ -25,16 +25,34 @@
   });
 
   const on_success = ({ detail }) => {
-    const { ok, name, url } = detail.response;
-    console.log($myform.summary);
-    setCookie(".NOM20.COOKIECONSENT", "true", 9999);
-    dispatch("message", {
-      message: `Welcome aboard ${name}!`,
-      type: "success",
-      uncloseable: true,
-    });
+    const { ok, name, url, message } = detail.response;
+    if (ok) {
+      console.log($myform.summary);
+      setCookie(".CONSENT", "true", 9999);
+      dispatch("message", {
+        message: {
+          message: "auth.welcome_aboard",
+          values: { name },
+          pack: "auth",
+        },
+        type: "success",
+        uncloseable: true,
+      });
+    } else if (message == "mfa_required") {
+      dispatch("message", {
+        message: { message: "auth.mfa_required", pack: "auth" },
+        type: "warn",
+        uncloseable: true,
+      });
+    } else if (message == "invalid_request") {
+      dispatch("message", {
+        message: { message: "auth.auth_error", pack: "auth" },
+        type: "error",
+        uncloseable: true,
+      });
+    }
     setTimeout(() => {
-      window.location = url;
+      navigate(url);
     }, 3000);
   };
 </script>

@@ -3,7 +3,7 @@
 </script>
 
 <Prep css_file="pongee.min.css">
-  <div class="pongee" style="width:100%;height:100%">
+  <div class="pongee">
     <div class="content">
       <slot name="content" />
     </div>

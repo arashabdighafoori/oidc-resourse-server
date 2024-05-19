@@ -1,12 +1,16 @@
 {
   "consent": {
+    "title": "Cookies!",
     "text": [
-      { "t": "text", "value": "I Agree to" },
-      { "t": "list", "value": ["item 1", "item 2"] }
+      {
+        "t": "text",
+        "value": "You should change this page to add your cookie consent!"
+      },
+      { "t": "list", "value": ["this is a list item", "and another one!"] }
     ],
     "buttons": {
-      "agree": "I Agree",
-      "disagree": "I Disagree"
+      "agree": "Agree",
+      "disagree": "Disagree"
     }
   }
 }

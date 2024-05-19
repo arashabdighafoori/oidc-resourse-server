@@ -42,12 +42,12 @@
       })
       .then((response) => {
         if (response?.ok) dispatcher("success", { response });
+        else dispatcher("error", { response });
         isSuccess = response?.ok;
         isError = !response?.ok;
         isSubmitting = false;
       })
       .catch((error) => {
-        dispatcher("error", { error });
         isError = true;
         isSubmitting = false;
       });

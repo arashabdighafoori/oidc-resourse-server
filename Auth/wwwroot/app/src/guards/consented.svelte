@@ -1,6 +1,5 @@
 <script>
   import { store } from "../data/settings/consent";
-  // console.log("consent:", $store);
 </script>
 
 {#if $store}

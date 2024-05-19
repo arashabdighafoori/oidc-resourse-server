@@ -24,16 +24,49 @@
   });
 
   const on_success = ({ detail }) => {
-    const { ok, name, url } = detail.response;
-    setCookie(".COOKIECONSENT", "true", 9999);
+    const { name, url } = detail.response;
+    setCookie(".CONSENT", "true", 9999);
     dispatch("message", {
-      message: `Welcome Back ${name}!`,
+      message: {
+        message: "auth.welcome_aboard",
+        values: { name },
+        pack: "auth",
+      },
       type: "success",
       uncloseable: true,
     });
     setTimeout(() => {
       navigate(url);
     }, 3000);
+  };
+  const on_error = ({ detail }) => {
+    const { url, message } = detail.response;
+    console.log(detail);
+    if (message == "mfa_required") {
+      dispatch("message", {
+        message: { message: "auth.mfa_required", pack: "auth" },
+        type: "warn",
+        uncloseable: true,
+      });
+      setTimeout(() => {
+        navigate(url);
+      }, 3000);
+    } else if (message == "invalid_request") {
+      dispatch("message", {
+        message: { message: "auth.auth_error", pack: "auth" },
+        type: "error",
+        uncloseable: true,
+      });
+    } else if (message == "wrong_input") {
+      dispatch("message", {
+        message: { message: "auth.wrong_input", pack: "auth" },
+        type: "error",
+        uncloseable: true,
+      });
+      setTimeout(() => {
+        window.location = "/auth";
+      }, 3000);
+    }
   };
 </script>
 
@@ -43,6 +76,7 @@
       <div class="form_container">
         <BodyForm
           on:success={on_success}
+          on:error={on_error}
           form={myform}
           action="/api/v1/auth/login"
         >
