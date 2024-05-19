@@ -2,14 +2,12 @@
    <b>
         oidc-resourse-server
    </b>
-
-<sup><sub><sub><sup>
-( Work in progress ... )
-</sub></sub></sup></sup>
-
 </h1>
 
-<p align="center">An OpenID Connect resourse server built with .Net Core 7 minimal api.</p>
+<p align="center">
+An OpenID Connect resourse server built with .Net Core 7 minimal api.
+</p>
+
 <br />
 
 <!-- <div align="center"></div> -->
@@ -18,17 +16,31 @@
 
 ## Table of Contents
 
-<!-- - [License](#license) -->
-
-- Will be added soon...
+- [Features](#features)
+- [What's missing?](#what-is-missing)
 
 <br />
 
 ## Features
 
-- Will be added soon...
+- Fingerprinting (clientjs)
+- Bot detection (@fingerprintjs/botd)
+- Client-Side Internationalization
+- Client-Side and Server-Side Feature Flags
+- Themes
 
 <br />
+
+## What is missing?
+
+- Multifactor authentication is not implemented so different methods can be used (SMS, Email, Passkey, etc...)
+- Only english is added to client languages.
+- Fingerprint validtion - if unique clients are not neccessery - can be turned off from `appsettings.json > Features > FingerPrintValidation`.
+- Client's feature flags are currently just a object returned from `/api/v1/features` route ( it can be changed to use feature flags from `Microsoft.FeatureManagement` or from `IConfiguration` ).
+
+<br />
+
+## Happy Programming :tada: !
 
 <!--
 ## License
